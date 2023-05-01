@@ -1,0 +1,10 @@
+data/old/
+data/videos/
+data/models/
+data/dataset/
+
+venv/
+mmdetection/
+
+src/**/__pycache__
+
