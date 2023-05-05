@@ -74,6 +74,19 @@ def contour_to_ploygon(contour: np.ndarray) -> np.ndarray:
     # print(f"contour: {contour.shape}, reshaped: {reshaped.shape}")
     return reshaped.ravel(order='C')
 
+def merge_contours(contours: np.ndarray):
+    points = [] 
+    for contour in contours:
+        points += [pt[0] for pt in contour]
+
+    points = np.array(points)
+    assert points.shape[1] == 2
+    x, y = points.T
+    x, y = sort_xy(x, y)
+
+    points = np.stack((x,y), axis = 1)
+    return np.array(points).reshape((-1,1,2)).astype(np.int32)
+
 def create_annotation_format(mask_fn: str, contours, image_id_, category_id, annotation_id) -> dict:
     ann = {
         "iscrowd": 0,
@@ -92,18 +105,8 @@ def create_annotation_format(mask_fn: str, contours, image_id_, category_id, ann
     elif len(contours) <= 0:
         print(f"No contours found in mask: {mask_fn}")
     else:
-        points = [] 
-        for contour in contours:
-            points += [pt[0] for pt in contour]
-
-        points = np.array(points)
-        assert points.shape[1] == 2
-        x, y = points.T
-        x, y = sort_xy(x, y)
-
-        points = np.stack((x,y), axis = 1)
-        contour = np.array(points).reshape((-1,1,2)).astype(np.int32)
-        ann["bbox"] = cv2.boundingRect(contour)
+        merged = merge_contours(contours)
+        ann["bbox"] = cv2.boundingRect(merged)
 
         for cnt in contours:
             ann["segmentation"].append(contour_to_ploygon(cnt).tolist())

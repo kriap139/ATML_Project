@@ -7,16 +7,13 @@ from Util.drawing import show_draw_contours, save_draw_contours
 from typing import Union
 import shutil
 from pycocotools.coco import COCO
-from Util.cio import dirUp
+from Util.cio import dirUp, clean_dir
 import matplotlib.pyplot as plt
 import numpy as np
 
 
 def coco_draw_masks_test(coco_fp: str, image_dir: str, cat_draw_order: dict, colors_by_cat: dict, output_dir: str, alpha: float = 0.9):
-    if os.path.exists(output_dir):
-        shutil.rmtree(output_dir)
-    os.makedirs(output_dir)
-
+    clean_dir(output_dir)
     coco = COCO(coco_fp)
 
     categories = coco.loadCats(coco.getCatIds())
@@ -32,7 +29,6 @@ def coco_draw_masks_test(coco_fp: str, image_dir: str, cat_draw_order: dict, col
         fn = img_info["file_name"]
         fp = os.path.join(image_dir, fn)
         
-
         ann_ids = coco.getAnnIds(imgIds=img_info['id'], catIds=coco.getCatIds(), iscrowd=None)
         anns = coco.loadAnns(ann_ids)
         anns.sort(key=lambda ann: cat_draw_order[ann["category_id"]])

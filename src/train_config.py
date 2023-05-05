@@ -9,10 +9,14 @@ model = dict(
 )
 
 # Modify dataset related settings
-data_root = 'dataset/v3-87/'
+data_root = 'data/dataset/v3-87/'
 
 metainfo = {
     'classes': ('Valve_Lever_Brown', 'Valve_Lever_Brown_Mark'),
+    'palette': [
+         (217, 125, 88), # (217, 125, 88), (88, 125, 217)
+         (168, 140, 25) # (168, 140, 25), (25,140,168)
+    ]
 }
 
 train_dataloader = dict(
@@ -44,12 +48,12 @@ val_evaluator = dict(
 test_evaluator = val_evaluator
 
 # Use a pre-trained Mask RCNN model to obtain higher performance
-load_from = None #'https://download.openmmlab.com/mmdetection/v2.0/mask_rcnn/mask_rcnn_r50_caffe_fpn_mstrain-poly_3x_coco/mask_rcnn_r50_caffe_fpn_mstrain-poly_3x_coco_bbox_mAP-0.408__segm_mAP-0.37_20200504_163245-42aa3d00.pth'
-resume = True  # Whether to resume from the checkpoint defined in `load_from`. If `load_from` is None, it will resume the latest checkpoint in the `work_dir`.
+load_from = 'https://download.openmmlab.com/mmdetection/v2.0/mask_rcnn/mask_rcnn_r50_caffe_fpn_mstrain-poly_3x_coco/mask_rcnn_r50_caffe_fpn_mstrain-poly_3x_coco_bbox_mAP-0.408__segm_mAP-0.37_20200504_163245-42aa3d00.pth'
+resume = False # Whether to resume from the checkpoint defined in `load_from`. If `load_from` is None, it will resume the latest checkpoint in the `work_dir`.
 
 # train config
 train_cfg = dict(
-  max_epochs=300, 
+  max_epochs=400, 
   val_interval=1 # Validation intervals. Set to 1 to run validation every epoch.
 )
 
@@ -61,17 +65,22 @@ optim_wrapper = dict(
 
 # Logging
 log_config = dict(
-    interval=50,
+    interval=1,
     hooks=[
-        dict(type='TextLoggerHook'), 
-        dict(type='TensorboardLoggerHook')
+        dict(type='TensorboardLoggerHook'),
+        dict(type='TextLoggerHook')
     ]
 )
 
-custom_imports = dict(
-    imports=["mmdet.utils.my-hook"], allow_failed_imports=False
+vis_backends = [
+    dict(type='LocalVisBackend'),
+    dict(type='TensorboardVisBackend')
+]
+
+visualizer = dict(
+    type='DetLocalVisualizer',
+    vis_backends=vis_backends,
+    name='visualizer'
 )
 
-custom_hooks = [
-    dict(type="MyHook", work_dir="work_dirs/train_config/")
-]
+checkpoint_config = dict(interval=1, max_keep_ckpts=3, by_epoch=True, priority='VERY_HIGH')

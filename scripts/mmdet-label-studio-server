@@ -1,0 +1,9 @@
+#!/bin/bash
+
+export LOCAL_FILES_DOCUMENT_ROOT="$PWD"
+
+label-studio-ml start "$PWD/src/label_studio/" --with \
+config_file=data/models/v3-87/train_config.py \
+checkpoint_file=data/models/v3-87/epoch_400.pth \
+device=cpu \
+--port 8003

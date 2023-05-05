@@ -2,9 +2,13 @@ data/old/
 data/videos/
 data/models/
 data/dataset/
+data/label_studio
+data/results/
 
 venv/
+ven2/
 mmdetection/
 
 src/**/__pycache__
+
 

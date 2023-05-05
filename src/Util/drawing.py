@@ -20,3 +20,17 @@ def save_draw_contours(image_dir: str, image_fn: str, save_dir: str, contours: n
 
     cv2.drawContours(img, contours, -1, color, 2)
     cv2.imwrite(save_fp, img)
+
+def make_contours_mask(contours: np.ndarray, mask_shape: tuple = None, color: tuple = None, mask: np.ndarray = None, save_fp: str = None):
+    if mask is None:
+         if mask_shape is None:
+             raise RuntimeError(f"Either mask or mask_shape hase to be specified!")
+         mask = np.zeros(shape=mask_shape, dtype=np.uint8)
+    if color is None:
+            color = (255, 255, 255)
+
+    cv2.drawContours(mask, contours, -1, color, -1)
+    if save_fp is not None:
+        cv2.imwrite(save_fp, mask)
+    return mask
+            

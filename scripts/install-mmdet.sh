@@ -11,3 +11,4 @@ cd mmdetection
 pip3 install -v -e .
 
 pip3 install -r requirements.txt
+pip install future tensorboard
